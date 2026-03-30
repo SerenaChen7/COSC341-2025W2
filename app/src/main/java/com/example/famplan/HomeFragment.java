@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
@@ -51,7 +52,7 @@ public class HomeFragment extends Fragment {
         setupHeader(rootView);
         setupSummary(rootView);
         setupNextUp(rootView);
-        setupOverviewList(rootView, mInflater);
+        setupGroupedLists(rootView);
     }
 
     private void setupHeader(View view) {
@@ -67,88 +68,77 @@ public class HomeFragment extends Fragment {
     }
 
     private void setupSummary(View view) {
-        TextView tvToday = view.findViewById(R.id.tv_count_today);
-        TextView tvUpcoming = view.findViewById(R.id.tv_count_upcoming);
-        TextView tvPending = view.findViewById(R.id.tv_count_pending);
-
-        Calendar today = startOfDay(Calendar.getInstance());
+        String todayStr = repository.getTodayString();
         int todayCount = 0, upcomingCount = 0, pendingCount = 0;
 
         for (Task t : repository.getAllTasks()) {
-            Calendar taskDate = parseTaskDate(t.getDate());
-            if (taskDate == null) continue;
-
-            if (taskDate.equals(today)) {
+            if ("Pending".equalsIgnoreCase(t.getStatus())) pendingCount++;
+            if (t.getDate().equals(todayStr)) {
                 todayCount++;
-            } else if (taskDate.after(today) && !t.getStatus().equalsIgnoreCase("Completed")) {
-                upcomingCount++;
-            }
-            if (t.getStatus().equalsIgnoreCase("Pending")) {
-                pendingCount++;
+            } else if (!t.getStatus().equalsIgnoreCase("Completed")) {
+                Calendar taskDate = parseTaskDate(t.getDate());
+                Calendar today = startOfDay(Calendar.getInstance());
+                if (taskDate != null && taskDate.after(today)) {
+                    upcomingCount++;
+                }
             }
         }
 
-        tvToday.setText(String.valueOf(todayCount));
-        tvUpcoming.setText(String.valueOf(upcomingCount));
-        tvPending.setText(String.valueOf(pendingCount));
+        updateSummaryCount(view.findViewById(R.id.include_today), String.valueOf(todayCount), "Today", android.R.drawable.ic_menu_recent_history);
+        updateSummaryCount(view.findViewById(R.id.include_upcoming), String.valueOf(upcomingCount), "Upcoming", android.R.drawable.ic_menu_my_calendar);
+        updateSummaryCount(view.findViewById(R.id.include_pending), String.valueOf(pendingCount), "Pending", android.R.drawable.ic_dialog_alert);
+    }
+
+    private void updateSummaryCount(View item, String count, String label, int iconRes) {
+        if (item == null) return;
+        ((TextView) item.findViewById(R.id.tv_summary_count)).setText(count);
+        ((TextView) item.findViewById(R.id.tv_summary_label)).setText(label);
+        ((ImageView) item.findViewById(R.id.iv_summary_icon)).setImageResource(iconRes);
     }
 
     private void setupNextUp(View view) {
-        View nextUpCard = view.findViewById(R.id.card_next_up);
-        Calendar today = startOfDay(Calendar.getInstance());
+        View card = view.findViewById(R.id.card_next_up);
+        String todayStr = repository.getTodayString();
 
-        List<Task> candidates = new ArrayList<>();
+        List<Task> todayTasks = new ArrayList<>();
         for (Task t : repository.getAllTasks()) {
-            Calendar taskDate = parseTaskDate(t.getDate());
-            if (taskDate == null) continue;
-            if (!taskDate.before(today) && !t.getStatus().equalsIgnoreCase("Completed")) {
-                candidates.add(t);
+            if (t.getDate().equals(todayStr) && !"Completed".equalsIgnoreCase(t.getStatus())) {
+                todayTasks.add(t);
             }
         }
 
-        Collections.sort(candidates, (a, b) -> {
-            Calendar da = parseTaskDate(a.getDate());
-            Calendar db = parseTaskDate(b.getDate());
-            if (da == null || db == null) return 0;
-            int cmp = da.compareTo(db);
-            return cmp != 0 ? cmp : parseTime(a.getStartTime()) - parseTime(b.getStartTime());
-        });
+        Collections.sort(todayTasks, (a, b) -> parseTime(a.getStartTime()) - parseTime(b.getStartTime()));
 
-        if (candidates.isEmpty()) {
-            nextUpCard.setVisibility(View.GONE);
+        if (todayTasks.isEmpty()) {
+            card.setVisibility(View.GONE);
             return;
         }
 
-        Task nextTask = candidates.get(0);
-        nextUpCard.setVisibility(View.VISIBLE);
-        nextUpCard.setOnClickListener(v -> openDetails(nextTask.getId()));
+        Task next = todayTasks.get(0);
+        card.setVisibility(View.VISIBLE);
+        card.setOnClickListener(v -> openDetails(next.getId()));
 
-        ((TextView) view.findViewById(R.id.tv_next_task_title)).setText(nextTask.getTitle());
-        TextView statusView = view.findViewById(R.id.tv_next_task_status);
-        statusView.setText(nextTask.getStatus());
-        applyStatusColor(statusView, nextTask.getStatus());
-        ((TextView) view.findViewById(R.id.tv_next_task_time)).setText(nextTask.getStartTime());
-        String name = nextTask.getAssigneeId().equals("2") ? "Alex" : "Lily";
-        ((TextView) view.findViewById(R.id.tv_next_task_assignee)).setText("Assigned to: " + name);
-        ((TextView) view.findViewById(R.id.tv_next_task_location)).setText("Location: " + nextTask.getLocation());
+        ((TextView) card.findViewById(R.id.tv_next_task_title)).setText(next.getTitle());
+        TextView statusView = card.findViewById(R.id.tv_next_task_status);
+        statusView.setText(next.getStatus());
+        applyStatusColor(statusView, next.getStatus());
+        ((TextView) card.findViewById(R.id.tv_next_task_time)).setText(next.getStartTime());
+        String name = next.getAssigneeId().equals("2") ? "Alex" : "Lily";
+        ((TextView) card.findViewById(R.id.tv_next_task_assignee)).setText("Assigned to: " + name);
+        ((TextView) card.findViewById(R.id.tv_next_task_location)).setText("Location: " + next.getLocation());
     }
 
-    private void setupOverviewList(View view, LayoutInflater inflater) {
-        LinearLayout listContainer = view.findViewById(R.id.layout_overview_list);
-        listContainer.removeAllViews();
+    private void setupGroupedLists(View view) {
+        LinearLayout toMeContainer = view.findViewById(R.id.layout_to_me_list);
+        LinearLayout byMeContainer = view.findViewById(R.id.layout_by_me_list);
+        toMeContainer.removeAllViews();
+        byMeContainer.removeAllViews();
 
+        String currentUserId = repository.getCurrentUser().getId();
         Calendar today = startOfDay(Calendar.getInstance());
-        List<Task> upcoming = new ArrayList<>();
 
-        for (Task t : repository.getAllTasks()) {
-            Calendar taskDate = parseTaskDate(t.getDate());
-            if (taskDate == null) continue;
-            if (!taskDate.before(today) && !t.getStatus().equalsIgnoreCase("Completed")) {
-                upcoming.add(t);
-            }
-        }
-
-        Collections.sort(upcoming, (a, b) -> {
+        List<Task> tasks = new ArrayList<>(repository.getAllTasks());
+        Collections.sort(tasks, (a, b) -> {
             Calendar da = parseTaskDate(a.getDate());
             Calendar db = parseTaskDate(b.getDate());
             if (da == null || db == null) return 0;
@@ -156,19 +146,37 @@ public class HomeFragment extends Fragment {
             return cmp != 0 ? cmp : parseTime(a.getStartTime()) - parseTime(b.getStartTime());
         });
 
-        for (Task task : upcoming) {
-            View itemView = inflater.inflate(R.layout.item_task_overview, listContainer, false);
-            itemView.setOnClickListener(v -> openDetails(task.getId()));
+        for (Task task : tasks) {
+            if (task.getStatus().equalsIgnoreCase("Completed")) continue;
+            Calendar taskDate = parseTaskDate(task.getDate());
+            if (taskDate != null && taskDate.before(today)) continue;
 
-            ((TextView) itemView.findViewById(R.id.tv_item_title)).setText(task.getTitle());
-            String userName = task.getAssigneeId().equals("2") ? "Alex" : "Lily";
-            ((TextView) itemView.findViewById(R.id.tv_item_details)).setText(task.getStartTime() + " • " + userName);
-            TextView status = itemView.findViewById(R.id.tv_item_status);
-            status.setText(task.getStatus());
-            applyStatusColor(status, task.getStatus());
+            View itemView = mInflater.inflate(R.layout.item_task_overview, null);
+            fillTaskItem(itemView, task);
 
-            listContainer.addView(itemView);
+            if (task.getAssigneeId().equals(currentUserId)) {
+                toMeContainer.addView(itemView);
+            } else if (task.getCreatorId().equals(currentUserId)) {
+                byMeContainer.addView(itemView);
+            }
         }
+    }
+
+    private void fillTaskItem(View itemView, Task task) {
+        ((TextView) itemView.findViewById(R.id.tv_item_title)).setText(task.getTitle());
+        String name = task.getAssigneeId().equals("2") ? "Alex" : "Lily";
+        ((TextView) itemView.findViewById(R.id.tv_item_details)).setText(task.getStartTime() + " • " + name);
+
+        TextView status = itemView.findViewById(R.id.tv_item_status);
+        status.setText(task.getStatus());
+        applyStatusColor(status, task.getStatus());
+
+        itemView.setOnClickListener(v -> openDetails(task.getId()));
+
+        LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+        lp.setMargins(0, 0, 0, 16);
+        itemView.setLayoutParams(lp);
     }
 
     private void applyStatusColor(TextView statusView, String status) {
@@ -184,7 +192,6 @@ public class HomeFragment extends Fragment {
         }
     }
 
-    /** Parses "DayOfWeek, Month Day" (e.g. "Monday, March 16") into a Calendar at midnight. */
     private Calendar parseTaskDate(String dateStr) {
         try {
             String monthDay = dateStr.contains(", ") ? dateStr.split(", ", 2)[1] : dateStr;
@@ -204,7 +211,6 @@ public class HomeFragment extends Fragment {
         }
     }
 
-    /** Parses "h:mm AM/PM" into minutes since midnight for sorting. */
     private int parseTime(String timeStr) {
         try {
             String[] parts = timeStr.split(":");
