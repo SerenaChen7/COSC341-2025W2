@@ -19,7 +19,9 @@ import androidx.appcompat.app.AlertDialog; // 修正为 androidx 库
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
 
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Locale;
 import java.util.UUID;
 
 public class AddFragment extends Fragment {
@@ -75,7 +77,10 @@ public class AddFragment extends Fragment {
         etDate.setOnClickListener(v -> {
             Calendar c = Calendar.getInstance();
             new DatePickerDialog(requireContext(), (view, year, month, dayOfMonth) -> {
-                etDate.setText("Monday, March 16"); 
+                Calendar selected = Calendar.getInstance();
+                selected.set(year, month, dayOfMonth);
+                SimpleDateFormat sdf = new SimpleDateFormat("EEEE, MMMM d", Locale.getDefault());
+                etDate.setText(sdf.format(selected.getTime()));
             }, c.get(Calendar.YEAR), c.get(Calendar.MONTH), c.get(Calendar.DAY_OF_MONTH)).show();
         });
 
