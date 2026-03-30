@@ -11,7 +11,12 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
 
 public class ScheduleFragment extends Fragment {
 
@@ -52,7 +57,6 @@ public class ScheduleFragment extends Fragment {
             setupWeekView(inflater);
         } else {
             tvTitle.setText("Today");
-            tvDate.setText("Monday, March 16");
             tvDate.setVisibility(View.VISIBLE);
             btnToggle.setText("Week View →");
             setupTodayView(inflater);
@@ -60,10 +64,15 @@ public class ScheduleFragment extends Fragment {
     }
 
     private void setupTodayView(LayoutInflater inflater) {
-        List<Task> tasks = repository.getAllTasks();
-        for (Task task : tasks) {
-            // 匹配日期：Monday, March 16
-            if (task.getDate().contains("March 16")) {
+        String todayStr = repository.getTodayString();
+        tvDate.setText(todayStr);
+        
+        List<Task> allTasks = new ArrayList<>(repository.getAllTasks());
+        // 按时间排序
+        Collections.sort(allTasks, (t1, t2) -> t1.getStartTime().compareTo(t2.getStartTime()));
+
+        for (Task task : allTasks) {
+            if (task.getDate().equals(todayStr)) {
                 View itemView = inflater.inflate(R.layout.item_schedule_today, container, false);
                 fillTodayItem(itemView, task);
                 container.addView(itemView);
@@ -100,42 +109,46 @@ public class ScheduleFragment extends Fragment {
     }
 
     private void setupWeekView(LayoutInflater inflater) {
-        // 修正：这些是显示用的标签
-        String[] dayLabels = {"Monday(Today)", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"};
-        String[] dateLabels = {"Mar 16", "Mar 17", "Mar 18", "Mar 19", "Mar 20", "Mar 21"};
-        // 修正：这些用于匹配 DataRepository 里的 "March 16"
-        String[] matchDates = {"March 16", "March 17", "March 18", "March 19", "March 20", "March 21"};
+        Calendar cal = Calendar.getInstance();
+        SimpleDateFormat dayFormat = new SimpleDateFormat("EEEE", Locale.US);
+        SimpleDateFormat dateFormat = new SimpleDateFormat("MMM d", Locale.US);
+        SimpleDateFormat matchFormat = new SimpleDateFormat("EEEE, MMMM d", Locale.US);
 
-        for (int i = 0; i < dayLabels.length; i++) {
+        // 显示接下来 7 天
+        for (int i = 0; i < 7; i++) {
+            String dayLabel = dayFormat.format(cal.getTime());
+            if (i == 0) dayLabel += "(Today)";
+            String dateLabel = dateFormat.format(cal.getTime());
+            String matchDate = matchFormat.format(cal.getTime());
+
             View dayBox = inflater.inflate(R.layout.item_schedule_week_box, container, false);
             TextView tvDay = dayBox.findViewById(R.id.tv_week_day);
             TextView tvDateLabel = dayBox.findViewById(R.id.tv_week_date);
             LinearLayout tasksLayout = dayBox.findViewById(R.id.layout_week_tasks);
 
-            tvDay.setText(dayLabels[i]);
-            tvDateLabel.setText(dateLabels[i]);
+            tvDay.setText(dayLabel);
+            tvDateLabel.setText(dateLabel);
 
-            // 今日高亮逻辑
             if (i == 0) {
                 dayBox.setBackgroundResource(R.drawable.bg_week_box_today);
                 tvDay.setTextColor(getResources().getColor(R.color.primary_blue));
             }
 
-            // 填充当天的任务
-            fillWeekTasks(tasksLayout, matchDates[i], inflater);
+            fillWeekTasks(tasksLayout, matchDate, inflater);
             container.addView(dayBox);
+            
+            cal.add(Calendar.DAY_OF_YEAR, 1);
         }
     }
 
     private void fillWeekTasks(LinearLayout tasksLayout, String matchDate, LayoutInflater inflater) {
-        List<Task> tasks = repository.getAllTasks();
-        boolean hasTask = false;
-        for (Task task : tasks) {
-            if (task.getDate().contains(matchDate)) {
-                hasTask = true;
+        List<Task> allTasks = new ArrayList<>(repository.getAllTasks());
+        Collections.sort(allTasks, (t1, t2) -> t1.getStartTime().compareTo(t2.getStartTime()));
+
+        for (Task task : allTasks) {
+            if (task.getDate().equals(matchDate)) {
                 View itemView = inflater.inflate(R.layout.item_task_overview, tasksLayout, false);
                 
-                // 去掉 Item 的外边距，让它在方块里更紧凑
                 LinearLayout.LayoutParams lp = (LinearLayout.LayoutParams) itemView.getLayoutParams();
                 lp.setMargins(0, 0, 0, 8);
                 itemView.setLayoutParams(lp);
@@ -165,7 +178,5 @@ public class ScheduleFragment extends Fragment {
                 tasksLayout.addView(itemView);
             }
         }
-        
-        // 如果当天没任务，可以隐藏或显示提示，这里选择保持原样（空盒子）
     }
 }
