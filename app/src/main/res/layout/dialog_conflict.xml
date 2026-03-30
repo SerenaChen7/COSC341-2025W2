@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/conflict_dialog_bg"
+    android:padding="24dp">
+
+    <TextView
+        android:id="@+id/tv_conflict_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Schedule Conflict"
+        android:textColor="@color/delete_red"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/tv_conflict_msg"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="This overlaps with Soccer Practice at 4:30 PM."
+        android:textColor="@color/text_dark"
+        app:layout_constraintTop_toBottomOf="@id/tv_conflict_title" />
+
+    <Button
+        android:id="@+id/btn_reschedule"
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:layout_marginTop="24dp"
+        android:backgroundTint="@color/primary_blue"
+        android:text="Reschedule Again"
+        android:textAllCaps="false"
+        app:layout_constraintTop_toBottomOf="@id/tv_conflict_msg" />
+
+    <Button
+        android:id="@+id/btn_keep_anyway"
+        style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:layout_marginTop="8dp"
+        android:text="Keep Anyway"
+        android:textAllCaps="false"
+        android:textColor="#F57F17"
+        app:layout_constraintTop_toBottomOf="@id/btn_reschedule"
+        app:strokeColor="#F57F17" />
+
+    <Button
+        android:id="@+id/btn_cancel_conflict"
+        style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:layout_marginTop="8dp"
+        android:text="Cancel"
+        android:textAllCaps="false"
+        android:textColor="@color/text_gray"
+        app:layout_constraintTop_toBottomOf="@id/btn_keep_anyway"
+        app:strokeColor="@color/border_gray" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

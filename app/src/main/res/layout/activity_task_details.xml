@@ -1,0 +1,235 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white">
+
+    <!-- Header -->
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/layout_header"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="16dp"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <ImageView
+            android:id="@+id/btn_back"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:src="@drawable/ic_back_arrow"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:tint="@color/black" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:text="Task Details"
+            android:textColor="@color/black"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toEndOf="@id/btn_back"
+            app:layout_constraintTop_toTopOf="parent" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <View
+        android:id="@+id/header_divider"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/border_gray"
+        app:layout_constraintTop_toBottomOf="@id/layout_header" />
+
+    <!-- Content Area -->
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toTopOf="@+id/layout_buttons_container"
+        app:layout_constraintTop_toBottomOf="@id/header_divider">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="16dp">
+
+            <TextView
+                android:id="@+id/tv_detail_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Soccer Practice"
+                android:textColor="@color/black"
+                android:textSize="22sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/tv_detail_type"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:background="#F5F5F5"
+                android:paddingHorizontal="8dp"
+                android:paddingVertical="4dp"
+                android:text="event"
+                android:textColor="@color/text_gray"
+                android:textSize="12sp" />
+
+            <!-- 大盒子: 详情列表 -->
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
+                app:cardBackgroundColor="@color/white"
+                app:cardCornerRadius="4dp"
+                app:strokeColor="@color/border_gray"
+                app:strokeWidth="1dp"
+                app:cardElevation="0dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:divider="@drawable/divider_horizontal"
+                    android:showDividers="middle">
+
+                    <include layout="@layout/row_task_detail" android:id="@+id/row_datetime" />
+                    <include layout="@layout/row_task_detail" android:id="@+id/row_location" />
+                    <include layout="@layout/row_task_detail" android:id="@+id/row_assignee" />
+                    <include layout="@layout/row_task_detail" android:id="@+id/row_creator" />
+                    <include layout="@layout/row_task_detail" android:id="@+id/row_reminder" />
+                    
+                    <!-- 特殊处理 Status 这一行 -->
+                    <LinearLayout
+                        android:id="@+id/row_status"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:padding="12dp">
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Status"
+                            android:textColor="@color/text_gray"
+                            android:textSize="13sp" />
+                        <TextView
+                            android:id="@+id/tv_status_badge"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="4dp"
+                            android:background="@color/status_confirmed_bg"
+                            android:paddingHorizontal="8dp"
+                            android:paddingVertical="4dp"
+                            android:text="Confirmed"
+                            android:textColor="@color/status_confirmed_text"
+                            android:textSize="14sp" />
+                    </LinearLayout>
+
+                    <include layout="@layout/row_task_detail" android:id="@+id/row_recurring" />
+
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
+
+    <!-- 底部按钮区 -->
+    <LinearLayout
+        android:id="@+id/layout_buttons_container"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16dp"
+        app:layout_constraintBottom_toBottomOf="parent">
+
+        <!-- 负责人响应区 (Lily -> Alex 时 Alex 看到) -->
+        <LinearLayout
+            android:id="@+id/layout_assignee_response"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:visibility="gone">
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+                <Button
+                    android:id="@+id/btn_confirm"
+                    style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                    android:layout_width="0dp"
+                    android:layout_height="52dp"
+                    android:layout_weight="1"
+                    android:layout_marginEnd="8dp"
+                    android:text="Confirm"
+                    android:textAllCaps="false"
+                    android:textColor="@color/status_confirmed_text"
+                    app:strokeColor="@color/status_confirmed_text" />
+                <Button
+                    android:id="@+id/btn_decline"
+                    style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                    android:layout_width="0dp"
+                    android:layout_height="52dp"
+                    android:layout_weight="1"
+                    android:text="Decline"
+                    android:textAllCaps="false"
+                    android:textColor="@color/delete_red"
+                    app:strokeColor="@color/delete_red" />
+            </LinearLayout>
+            <Button
+                android:id="@+id/btn_request_info"
+                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                android:layout_width="match_parent"
+                android:layout_height="52dp"
+                android:layout_marginTop="8dp"
+                android:text="Request More Info"
+                android:textAllCaps="false"
+                android:textColor="@color/primary_blue"
+                app:strokeColor="@color/primary_blue" />
+        </LinearLayout>
+
+        <!-- 管理与执行区 -->
+        <Button
+            android:id="@+id/btn_mark_complete"
+            android:layout_width="match_parent"
+            android:layout_height="52dp"
+            android:backgroundTint="@color/primary_blue"
+            android:text="Mark Complete"
+            android:textAllCaps="false"
+            android:textColor="@color/white"
+            android:visibility="gone"
+            app:cornerRadius="4dp" />
+
+        <Button
+            android:id="@+id/btn_delete"
+            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+            android:layout_width="match_parent"
+            android:layout_height="52dp"
+            android:layout_marginTop="8dp"
+            android:text="Delete Task"
+            android:textAllCaps="false"
+            android:textColor="@color/delete_red"
+            android:visibility="gone"
+            app:strokeColor="@color/delete_red"
+            app:cornerRadius="4dp" />
+
+        <Button
+            android:id="@+id/btn_edit"
+            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+            android:layout_width="match_parent"
+            android:layout_height="52dp"
+            android:layout_marginTop="8dp"
+            android:text="Edit"
+            android:textAllCaps="false"
+            android:textColor="@color/text_gray"
+            android:visibility="gone"
+            app:strokeColor="@color/border_gray"
+            app:cornerRadius="4dp" />
+            
+    </LinearLayout>
+
+    <include layout="@layout/overlay_success" android:id="@+id/layout_delete_overlay" android:visibility="gone" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
