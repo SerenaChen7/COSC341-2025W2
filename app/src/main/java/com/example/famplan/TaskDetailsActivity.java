@@ -1,5 +1,6 @@
 package com.example.famplan;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -39,6 +40,23 @@ public class TaskDetailsActivity extends AppCompatActivity {
         if (backBtn != null) {
             backBtn.setOnClickListener(v -> finish());
         }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        if (currentTask != null) {
+            currentTask = repository.getTaskById(currentTask.getId());
+        }
+
+        if (currentTask == null) {
+            finish();
+            return;
+        }
+
+        setupViews();
+        setupButtons();
     }
 
     private void setupViews() {
@@ -102,7 +120,14 @@ public class TaskDetailsActivity extends AppCompatActivity {
 
         if (isCreator) {
             if (btnDelete != null) btnDelete.setVisibility(View.VISIBLE);
-            if (btnEdit != null) btnEdit.setVisibility(View.VISIBLE);
+            if (btnEdit != null) {
+                btnEdit.setVisibility(View.VISIBLE);
+                btnEdit.setOnClickListener(v -> {
+                    Intent intent = new Intent(TaskDetailsActivity.this, EditTaskActivity.class);
+                    intent.putExtra("TASK_ID", currentTask.getId());
+                    startActivity(intent);
+                });
+            }
         }
 
         if (isAssignee) {

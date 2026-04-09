@@ -1,3 +1,47 @@
 <resources>
     <string name="app_name">FamPlan</string>
+
+    <!-- Edit Task screen -->
+    <string name="edit_task_title">Edit Task</string>
+    <string name="edit_task_hint_title">Title</string>
+    <string name="edit_task_hint_type">Type</string>
+    <string name="edit_task_hint_date">Date</string>
+    <string name="edit_task_hint_time">Time</string>
+    <string name="edit_task_hint_location">Location</string>
+    <string name="edit_task_hint_assign_to">Assign To</string>
+    <string name="edit_task_hint_reminder">Reminder</string>
+    <string name="edit_task_hint_repeat">Repeat</string>
+    <string name="edit_task_hint_notes">Notes</string>
+    <string name="edit_task_notes_placeholder">Add any additional details...</string>
+    <string name="edit_task_save_changes">Save Changes</string>
+
+    <!-- Success modal -->
+    <string name="edit_task_success_title">Changes Saved</string>
+    <string name="edit_task_success_message">Your changes have been successfully saved.</string>
+    <string name="edit_task_view_task">View Task</string>
+    <string name="edit_task_close">Close</string>
+
+    <!-- Validation -->
+    <string name="error_title_required">Title is required</string>
+    <string name="error_type_required">Type is required</string>
+    <string name="error_date_required">Date is required</string>
+    <string name="error_time_required">Time is required</string>
+    <string name="error_assignee_required">Assignee is required</string>
+
+    <!-- Dropdown options -->
+    <string name="task_type_task">Task</string>
+    <string name="task_type_event">Event</string>
+
+    <string name="user_lily">Lily</string>
+    <string name="user_alex">Alex</string>
+
+    <string name="reminder_none">None</string>
+    <string name="reminder_15_min_before">15 min before</string>
+    <string name="reminder_30_min_before">30 min before</string>
+    <string name="reminder_1_hour_before">1 hour before</string>
+
+    <string name="repeat_none">None</string>
+    <string name="repeat_daily">Daily</string>
+    <string name="repeat_weekly">Weekly</string>
+    <string name="repeat_monthly">Monthly</string>
 </resources>
