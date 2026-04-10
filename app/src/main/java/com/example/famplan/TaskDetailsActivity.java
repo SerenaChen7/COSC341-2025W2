@@ -118,24 +118,18 @@ public class TaskDetailsActivity extends AppCompatActivity {
         if (btnEdit != null) btnEdit.setVisibility(View.GONE);
         if (layoutResponse != null) layoutResponse.setVisibility(View.GONE);
 
-        if (isCreator) {
-            if (btnDelete != null) btnDelete.setVisibility(View.VISIBLE);
-            if (btnEdit != null) {
-                btnEdit.setVisibility(View.VISIBLE);
-                btnEdit.setOnClickListener(v -> {
-                    Intent intent = new Intent(TaskDetailsActivity.this, EditTaskActivity.class);
-                    intent.putExtra("TASK_ID", currentTask.getId());
-                    startActivity(intent);
-                });
-            }
-        }
+        // DEGRADED: Show all buttons to all users regardless of role
+        if (btnComplete != null) btnComplete.setVisibility(View.VISIBLE);
+        if (btnDelete != null) btnDelete.setVisibility(View.VISIBLE);
+        if (btnEdit != null) btnEdit.setVisibility(View.VISIBLE);
+        if (layoutResponse != null) layoutResponse.setVisibility(View.VISIBLE);
 
-        if (isAssignee) {
-            if ("Confirmed".equalsIgnoreCase(currentTask.getStatus())) {
-                if (btnComplete != null) btnComplete.setVisibility(View.VISIBLE);
-            } else if (!isCreator && "Pending".equalsIgnoreCase(currentTask.getStatus())) {
-                if (layoutResponse != null) layoutResponse.setVisibility(View.VISIBLE);
-            }
+        if (btnEdit != null) {
+            btnEdit.setOnClickListener(v -> {
+                Intent intent = new Intent(TaskDetailsActivity.this, EditTaskActivity.class);
+                intent.putExtra("TASK_ID", currentTask.getId());
+                startActivity(intent);
+            });
         }
 
         // --- 核心交互逻辑实现 ---
@@ -146,7 +140,7 @@ public class TaskDetailsActivity extends AppCompatActivity {
                 currentTask.setStatus("Confirmed");
                 updateStatusUI();
                 setupButtons(); // 刷新按钮显示（隐藏 Confirm，显示 Mark Complete）
-                Toast.makeText(this, "Task Confirmed", Toast.LENGTH_SHORT).show();
+                // DEGRADED: Toast removed
             });
         }
 
@@ -156,7 +150,7 @@ public class TaskDetailsActivity extends AppCompatActivity {
                 currentTask.setStatus("Completed");
                 updateStatusUI();
                 setupButtons(); // 隐藏 Mark Complete
-                Toast.makeText(this, "Task Marked as Completed", Toast.LENGTH_SHORT).show();
+                // DEGRADED: Toast removed
             });
         }
 

@@ -56,7 +56,7 @@
             android:background="@color/border_gray"
             app:layout_constraintTop_toBottomOf="@id/tv_date" />
 
-        <!-- Today's Summary -->
+        <!-- Today's Summary - DEGRADED: hidden -->
         <TextView
             android:id="@+id/tv_summary_title"
             android:layout_width="wrap_content"
@@ -67,6 +67,7 @@
             android:textColor="@color/black"
             android:textSize="20sp"
             android:textStyle="bold"
+            android:visibility="gone"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/divider1" />
 
@@ -78,6 +79,7 @@
             android:layout_marginTop="12dp"
             android:orientation="horizontal"
             android:weightSum="3"
+            android:visibility="gone"
             app:layout_constraintTop_toBottomOf="@id/tv_summary_title">
             <!-- 统计卡片内容保持不变... -->
             <include layout="@layout/card_summary_item" android:id="@+id/include_today" />
@@ -91,6 +93,7 @@
             android:layout_height="1dp"
             android:layout_marginTop="24dp"
             android:background="@color/border_gray"
+            android:visibility="gone"
             app:layout_constraintTop_toBottomOf="@id/layout_summary_cards" />
 
         <!-- Next Up -->
@@ -99,7 +102,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
-            android:layout_marginTop="16dp"
+            android:layout_marginTop="4dp"
             android:text="Next Up"
             android:textColor="@color/black"
             android:textSize="20sp"
@@ -129,7 +132,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
-            android:layout_marginTop="16dp"
+            android:layout_marginTop="4dp"
             android:text="Assigned to Me"
             android:textColor="@color/black"
             android:textSize="18sp"
@@ -152,7 +155,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
-            android:layout_marginTop="24dp"
+            android:layout_marginTop="4dp"
             android:text="Assigned by Me"
             android:textColor="@color/black"
             android:textSize="18sp"

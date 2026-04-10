@@ -131,7 +131,7 @@ public class AddFragment extends Fragment {
     private void showConflictDialog(Task conflictingTask) {
         View dialogView = LayoutInflater.from(requireContext()).inflate(R.layout.dialog_conflict, null);
         AlertDialog dialog = new AlertDialog.Builder(requireContext()).setView(dialogView).create();
-        ((TextView) dialogView.findViewById(R.id.tv_conflict_msg)).setText("This overlaps with " + conflictingTask.getTitle() + " at " + conflictingTask.getStartTime() + ".");
+        ((TextView) dialogView.findViewById(R.id.tv_conflict_msg)).setText("A scheduling conflict has been detected. Please choose an action.");
         dialogView.findViewById(R.id.btn_reschedule).setOnClickListener(v -> dialog.dismiss());
         dialogView.findViewById(R.id.btn_keep_anyway).setOnClickListener(v -> { dialog.dismiss(); saveTask(); });
         dialogView.findViewById(R.id.btn_cancel_conflict).setOnClickListener(v -> dialog.dismiss());

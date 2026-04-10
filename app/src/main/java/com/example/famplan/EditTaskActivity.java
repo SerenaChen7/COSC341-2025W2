@@ -230,7 +230,7 @@ public class EditTaskActivity extends AppCompatActivity {
         AlertDialog dialog = new AlertDialog.Builder(this).setView(dialogView).create();
 
         TextView tvMessage = dialogView.findViewById(R.id.tv_conflict_msg);
-        tvMessage.setText("This overlaps with " + conflictingTask.getTitle() + " at " + conflictingTask.getStartTime() + ".");
+        tvMessage.setText("A scheduling conflict has been detected. Please choose an action.");
 
         dialogView.findViewById(R.id.btn_reschedule).setOnClickListener(v -> dialog.dismiss());
         dialogView.findViewById(R.id.btn_keep_anyway).setOnClickListener(v -> {
